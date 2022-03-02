@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import queryString from 'query-string';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -11,18 +11,23 @@ export const SearchScreen = () => {
   const location = useLocation();
   const { q = '' } = queryString.parse(location.search);
 
-  const [formValue, handleInputChange] = useForm({
+  const [formValue, handleInputChange, reset] = useForm({
     searchText: q,
   });
 
   const { searchText } = formValue;
-  const filteredHeros = getHeroByName(q);
+  const filteredHeros = useMemo(() => getHeroByName(q), [q]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(searchText);
     navigate(`?q=${searchText}`);
-};
+  };
+
+  const resetForm = () => {
+    navigate(``);
+    reset();
+  }
 
   return (
     <>
@@ -50,6 +55,13 @@ export const SearchScreen = () => {
               className='btn btn-outline-primary mt-2 btn-block'>
               Submit
             </button>
+
+            <button 
+              type="button"
+              onClick={resetForm}
+              className='btn btn-primary mt-2 btn-block'>
+              Reset
+            </button>
           </form>
         </div>
 
@@ -57,6 +69,13 @@ export const SearchScreen = () => {
         <div className='col-7'>
           <h4>Results</h4>
           <hr />
+
+          {
+            (q === '') 
+            ? <div className='alert alert-info'>Search</div>
+            : (filteredHeros.length === 0) 
+            && <div className='alert alert-danger'>No results for <b>{ q }</b></div>
+          }
 
           {
             filteredHeros.map(
