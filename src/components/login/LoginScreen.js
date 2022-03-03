@@ -8,14 +8,12 @@ export const LoginScreen = () => {
   const navigate = useNavigate();
   
   const handleLogin = () => {
-    const action = { 
+    dispatch({ 
       type: types.login,
       payload: {
         name: 'Kevin'
       }
-    }
-
-    dispatch(action);
+    });
 
     navigate('/marvel', {
       replace: true,
